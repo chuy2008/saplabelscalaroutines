@@ -34,6 +34,7 @@ object FileExplorer
                    else   acc    		      
    	    }
         var endPatt = Pattern.compile(endTag)
-        if (TermFound(endPatt)) loopExtractLines(List(): List[String], endPatt) else List()
+        loopExtractLines(List(): List[String], endPatt)
+//        if (TermFound(endPatt)) loopExtractLines(List(): List[String], endPatt) else List()
     }
 }

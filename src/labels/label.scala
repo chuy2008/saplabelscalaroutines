@@ -53,78 +53,33 @@ object label extends App
     								"FIELD_LABEL_FOR_DBF_20 =",
     								"FIELD_LABEL_FOR_DBF_21 =",
     								"FIELD_LABEL_FOR_DBF_22 =")
-  
-  
-//     val fileNameAndPath           	    = "/home/chuy/FOXPRO/000001039618.txt"
     								
-     val inputParameterFile             = "home/chuy/FOXPRO/trial/inputParameterFile.txt"
-       
+     val inputParameterFile             = "/home/chuy/FOXPRO/trial/inputParameterFile.txt"       
      var inputParameterScanner = new Scanner(new FileInputStream(new File(inputParameterFile)))
      var inputParameterListOfStrings = FileExplorer.ConvertFileToListOfStrings(inputParameterScanner, "END OF FILE")
-
-/*
- *         In the routine below "referenceSapFields" is the label that is written in the inputParameterFile
- *         that must be used as a guide to assign the sapFieldName....
- */             
-     val sapFieldsName =  InitialParameterSearch.EstablishFields(inputParameterListOfStrings, referenceSapFields)
- /*
- *         In the routine below "referenceLabelFields" is the label that is written in the inputParameterFile
- *         that must be used as a guide to assign the labelFieldName....
- */                                                                                  
-                                                                                                                                                                   
-     val labelFieldsName =  InitialParameterSearch.EstablishFields(inputParameterListOfStrings, referenceLabelFields)
-                                                                                   
-     val listOfFiles     =  InitialParameterSearch.SearchForFiles(inputParameterFile)
-     
-/*    
- *         idealmente a continuacion no conviene convertir a String para mas adelante convertir a File
- */     
-     val sapOutputFileNameAndPath                = listOfFiles(0).getName
-     val labelInputFile
-     
-     val sapLabeler                  	= new SapOutput(sapOutputFileNameAndPath, StandardCharsets.UTF_8)
+     val sapFieldsName   =  InitialParameterSearch.EstablishFields(inputParameterListOfStrings, 
+                                                                   referenceSapFields)
+     val labelFieldsName =  InitialParameterSearch.EstablishFields(inputParameterListOfStrings, 
+                                                                   referenceLabelFields)
+     val inputFolder     = InitialParameterSearch.EstablishField(inputParameterListOfStrings,
+                           "INPUT_FOLDER_WITH_SAP_OUTPUT_FILES")
+     val outputFolder    = InitialParameterSearch.EstablishField(inputParameterListOfStrings,
+                           "OUTPUT_FOLDER_WITH_FILES_READY_FOR_EASY_LABEL")     
+     val listOfFiles     =  InitialParameterSearch.SearchForFiles(inputFolder)   
+ 
+     val plainFileName                  = listOfFiles(0).getName
+     val sapOutputFileNameAndPath       = inputFolder + plainFileName  
+     val sapLabeler                  	= new SapOutput(sapOutputFileNameAndPath, StandardCharsets.UTF_8)     
      val sapOutputList					= sapLabeler.getParsedFile
-     println (sapOutputList)
-//     sapLabeler.printParsedFile
-//     val sipOutput = List("1", "2", "3", "4", "5")
-     DBaseWr.createDbfFile(sapOutputList, "OutputFile.dbf")
-  
+     val easyLabelInputFile             = outputFolder + AdaptNameToDBF(plainFileName)
+
+     DBaseWr.createDbfFile(sapOutputList, labelFieldsName, easyLabelInputFile)
+    
+     def AdaptNameToDBF(str:String): String =
+    {
+       str.substring(0, str.length - 4) + "&.dbf"
+     }
 }
+
+
      
-     
-     
-/*
-  def main(args: Array[String]): Unit = 
-  {
-    
- //     file location (folder) for file to be read should be configurable on the interface or written on a file
-
-    
-    
-    
- //     read file and convert to List of Strings
-    
-    
-    
- //     output folder should also be defined on the interface
-    
-    
-//      separate fields according to separator    
-
-    
-//      create a new List of Strings based on separators
-    
-    
-  }
-
-*/
-
-
-
-  
-  
-  
-  
-  
-  
-  
